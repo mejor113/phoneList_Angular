@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Phone List</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/bundle.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
+    <script>
+        angular.module('myApp', [])
+            .controller('appCtrl', function($scope) {
+                var listLocal = JSON.parse(localStorage.getItem('templateCache'));
+                this.pageShow = 1;
+                this.list = {
+                  users: 0
+                };
+
+                if(listLocal){
+                  this.list = listLocal;
+                }
+
+                this.addNew = function() {
+                    var idNum = 'id' + this.list.users;
+                    this.list[idNum] = this.newCont;
+                    localStorage.setItem('templateCache', JSON.stringify(this.list));
+                    ++this.list.users;
+                    this.newCont.phones.length = 1;
+                    this.newCont.name= '';
+                    this.newCont.phones[0].phoneNum= '';
+                };
+                this.newCont = {
+                  name: '',
+                  phones: [{
+                    phoneName: 'Мобильный',
+                    phoneNum: ''
+                  }]
+                }
+
+                this.addField = function() {
+                  this.newCont.phones.push({
+                    phoneName: 'Название',
+                    phoneNum: 'Номер телефона'
+                  });
+                }
+
+                this.test = function(id) {
+                  console.log(id);
+                };
+                this.selectFriend = function( index ) {
+                  var elem = angular.element(document.querySelectorAll('li.list-group-item')[index]);
+                  if(this.list[index].show){
+                    this.list[index].show = false;
+                  } else {
+                    this.list[index].show = true;
+                  }
+
+                };
+                this.removeFriend = function(index) {
+                  this.list.splice(index, 1);
+                  localStorage.setItem('templateCache', JSON.stringify(this.list));
+                };
+            })
+    </script>
+</head>
+
+<body ng-controller="appCtrl as cont">
+    <header class="container">
+        <div class="row bg-primary title-block">
+            <h2 class="text-center">Список контактов</h2>
+        </div>
+        <div class="row">
+            <ul class="nav nav-pills">
+                <li class="btn btn-default" ng-click="cont.pageShow=1">Добавить</li>
+                <li class="btn btn-default" ng-click="cont.pageShow=2">Список</li>
+            </ul>
+        </div>
+    </header>
+    <main>
+        <div class="container" ng-switch on="cont.pageShow">
+            <form role="form" ng-switch-when="1">
+                <div class="form-group">
+                    <input type="text" class="form-control " id="exampleInputEmail1" placeholder="Введите полное имя" ng-model="cont.newCont.name">
+                </div>
+                <div class="form-group" ng-repeat="item in cont.newCont.phones track by $index">
+                    <input type="text" class="form-control" placeholder="Введите название телефона" ng-model="item.phoneName">
+                    <input type="tel" class="form-control" placeholder="Введите телефон" ng-model="item.phoneNum">
+                </div>
+                <button class="btn btn-primary" ng-click="cont.addField()">+поле</button>
+                <button type="submit" class="btn btn-primary" ng-click="cont.addNew()">Добавить</button>
+            </form>
+
+
+            <div ng-switch-when="2">
+              <div>
+                <ul class="list-group" >
+                  <li ng-repeat="(key, value) in cont.list track by $index" class="list-group-item"  ng-click="cont.test(cont.list[item])" >
+                    {{key}} : {{value}}
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!--<ul ng-switch-when="2" class="list-group" >
+              <li ng-repeat="item in cont.list track by $index" class="list-group-item" ng-click="cont.selectFriend($index)">
+                <span ng-bind="item.name"></span>
+                <span ng-show="cont.list[$index].show" ng-bind="item.phone"></span>
+                <button class="btn btn-primary btn-xs" ng-click="cont.removeFriend($index);$event.stopPropagation()">удалить</button>
+              </li>
+              <li ng-repeat="item in cont.list" class="list-group-item" ng-if="$index!=0" ng-click="cont.test(item)">{{item.name}}</li>
+            </ul>-->
+        </div>
+    </main>
+</body>
+
+</html>
