@@ -1,93 +1,126 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="myApp">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Список контактов</title>
-  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-  <link rel="stylesheet" href="css/bundle.min.css">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
-  <script>
-    angular.module('myApp',[])
-      .controller('appCtrl', function($scope) {
-        this.pageShowNum = 1;
-        this.list = {
-          user: 0
-        };
-        this.newCont = {
-          name: '',
-          phones: [{
-            phoneName: 'Мобильный',
-            phoneNumber: ''
-          }]
-        };
-        this.addNewContact = function() {
-          var id = 'id' + this.list.user;
-          this.list[id]= {};
-          this.list[id].name = this.newCont.name;
-          this.list[id].values = [];
-          for(var i = 0; i < this.newCont.phones.length; i++) {
-          	this.list[id].values.push({
-            phoneName: this.newCont.phones[i].phoneName,
-            phoneNumber: this.newCont.phones[i].phoneNumber
-            });
-          };
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Список контактов</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/bundle.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
+    <script>
+        angular.module('myApp', [])
+            .controller('appCtrl', function($scope) {
+                var localList = JSON.parse(localStorage.getItem('templateCache'));
+                this.pageShowNum = 1;
+                this.list = {
+                    user: 0
+                };
+                this.newCont = {
+                    name: '',
+                    phones: [{
+                        phoneName: 'Мобильный',
+                        phoneNumber: ''
+                    }]
+                };
+                this.showList = [];
 
-          this.list.user++;
-          this.newCont.name = '';
-          this.newCont.phones.length = 1;
-          this.newCont.phones[0].phoneName = 'Мобильный';
-          this.newCont.phones[0].phoneNumber = '';
-        };
+                function addShowListItems() {
+                    this.showList.length = 0;
+                    for (var key in this.list) {
+                        if (key == 'user') continue;
+                        this.showList.push({
+                            name: this.list[key].name,
+                            id: key
+                        })
+                    }
+                };
 
-        this.addField = function() {
-          this.newCont.phones.push({
-            phoneName: '',
-            phoneNumber: ''
-          });
-        };
-      })
-  </script>
+                function createNewContact() {
+                    var id = 'id' + this.list.user;
+                    this.list[id] = {};
+                    this.list[id].name = this.newCont.name;
+                    this.list[id].phones = [];
+                    for (var i = 0; i < this.newCont.phones.length; i++) {
+                        this.list[id].phones.push({
+                            phoneName: this.newCont.phones[i].phoneName,
+                            phoneNumber: this.newCont.phones[i].phoneNumber
+                        });
+                    };
+                };
+
+                function clearNewListObject() {
+                    this.newCont.name = '';
+                    this.newCont.phones.length = 1;
+                    this.newCont.phones[0].phoneName = 'Мобильный';
+                    this.newCont.phones[0].phoneNumber = '';
+                };
+
+                if (localList) {
+                    this.list = localList;
+                    addShowListItems.call(this);
+                }
+
+                this.addNewContact = function() {
+                    this.list.user++;
+                    createNewContact.call(this);
+                    addShowListItems.call(this);
+                    localStorage.setItem('templateCache', JSON.stringify(this.list));
+                    clearNewListObject.call(this);
+                };
+
+                this.addField = function() {
+                    this.newCont.phones.push({
+                        phoneName: '',
+                        phoneNumber: ''
+                    });
+                };
+            })
+    </script>
 </head>
+
 <body ng-controller="appCtrl as ctrl">
-  <header class="container">
-      <div class="row bg-primary title-block">
-          <h2 class="text-center">Список контактов</h2>
-      </div>
-      <div class="row">
-          <ul class="nav nav-pills">
-              <li class="btn btn-default" ng-click="ctrl.pageShowNum=1">Создать</li>
-              <li class="btn btn-default" ng-click="ctrl.pageShowNum=2">Посмотреть</li>
-          </ul>
-      </div>
-  </header>
-  <main>
-    <div class="container" ng-switch on="ctrl.pageShowNum">
-      <div ng-switch-when="1">
-        <form role="form">
-          <div class="form-group">
-            <input type="text" class="form-control" placeholder="Введите полное имя" ng-model="ctrl.newCont.name">
-          </div>
-          <div class="from-group" ng-repeat="field in ctrl.newCont.phones track by $index">
-            <input type="text" class="form-control" placeholder="Введите название телефона" ng-model="field.phoneName">
-            <input type="tel" class="form-control" placeholder="Введите номер телефона" ng-model="field.phoneNumber">
-          </div>
-          <button type="button" name="addField" ng-click="ctrl.addField()">Добавить поле</button>
-          <button type="button" name="setNewContact" ng-click="ctrl.addNewContact()">Создать</button>
-        </form>
-      </div>
-      <div ng-switch-when="2">
-        <div>
-          <ul class="list-group">
-            <li class="list-group-item" ng-repeat="(name, param) in ctrl.list track by $index" ng-hide="$first">
-              <span ng-repeat="items in param track by $index">{{items}}</span>
-            </li>
-          </ul>
+    <header class="container">
+        <div class="row bg-primary title-block">
+            <h2 class="text-center">Список контактов</h2>
         </div>
-      </div>
-    </div>
-  </main>
+        <div class="row">
+            <ul class="nav nav-pills">
+                <li class="btn btn-default" ng-click="ctrl.pageShowNum=1">Создать</li>
+                <li class="btn btn-default" ng-click="ctrl.pageShowNum=2">Посмотреть</li>
+            </ul>
+        </div>
+    </header>
+    <main>
+        <div class="container" ng-switch on="ctrl.pageShowNum">
+            <div ng-switch-when="1" class="row">
+                <form role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Введите полное имя" ng-model="ctrl.newCont.name">
+                    </div>
+                    <div class="from-group" ng-repeat="field in ctrl.newCont.phones track by $index">
+                        <input type="text" class="form-control" placeholder="Введите название телефона" ng-model="field.phoneName">
+                        <input type="tel" class="form-control" placeholder="Введите номер телефона" ng-model="field.phoneNumber">
+                    </div>
+                    <div class="btn-group">
+                      <button class="btn btn-info" type="button" name="addField" ng-click="ctrl.addField()">Добавить поле</button>
+                      <button class="btn btn-success" type="button" name="setNewContact" ng-click="ctrl.addNewContact()">Создать</button>
+                  </div>
+                </form>
+            </div>
+            <div ng-switch-when="2" class="row">
+                <div>
+                    <input type="text" class="form-control" ng-model="ctrl.search" placeholder="Поиск" />
+                    <ul class="list-group">
+                        <li class="list-group-item" ng-repeat="item in ctrl.showList | filter:ctrl.search" ng-bind="item.name">
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
 </body>
+
 </html>
