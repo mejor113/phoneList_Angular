@@ -18,6 +18,11 @@
                 this.list = {
                     user: 0
                 };
+                this.userDetails = {
+                    id: '',
+                    name: '',
+                    phones: []
+                };
                 this.newCont = {
                     name: '',
                     phones: [{
@@ -78,20 +83,49 @@
                     });
                 };
 
+                this.showUserDetails = function(id) {
+                    this.userDetails.name = '';
+                    this.userDetails.id = '',
+                        this.userDetails.length = 0;
+                    this.userDetails.id = id;
+                    this.userDetails.name = this.list[id].name;
+                    for (var i = 0; i < this.list[id].phones.length; i++) {
+                        this.userDetails.phones.push({
+                            phoneName: this.list[id].phones[i].phoneName,
+                            phoneNumber: this.list[id].phones[i].phoneNumber
+                        });
+                    };
+                };
+
+                this.changeUserInfo = function() {
+                    var id = this.userDetails.id;
+                    this.list[id].name = this.userDetails.name;
+                    this.list[id].phones.length = 0;
+                    for (var i = 0; i < this.userDetails.phones.length; i++) {
+                        this.list[id].phones.push({
+                            phoneName: this.userDetails.phones[i].phoneName,
+                            phoneNumber: this.userDetails.phones[i].phoneNumber
+                        });
+                    };
+                    refreshShowListItems.call(this);
+                    localStorage.setItem('templateCache', JSON.stringify(this.list));
+                }
+
                 this.removeListItem = function(item) {
-                  delete this.list[item];
-                  localStorage.setItem('templateCache', JSON.stringify(this.list));
-                  refreshShowListItems.call(this);
+                    delete this.list[item];
+                    localStorage.setItem('templateCache', JSON.stringify(this.list));
+                    refreshShowListItems.call(this);
                 }
             })
     </script>
     <style>
-    .removeListItem {
-      display: none;
-    }
-    .showListItem:hover .removeListItem {
-      display: inline-block;
-    }
+        .removeListItem {
+            display: none;
+        }
+
+        .showListItem:hover .removeListItem {
+            display: inline-block;
+        }
     </style>
 </head>
 
@@ -103,7 +137,7 @@
         <div class="row">
             <ul class="nav nav-pills">
                 <li class="btn btn-default" ng-click="ctrl.pageShowNum=1">Создать</li>
-                <li class="btn btn-default" ng-click="ctrl.pageShowNum=2">Посмотреть</li>
+                <li class="btn btn-default" ng-click="ctrl.pageShowNum=2;ctrl.showItem = false">Посмотреть</li>
             </ul>
         </div>
     </header>
@@ -119,20 +153,34 @@
                         <input type="tel" class="form-control" placeholder="Введите номер телефона" ng-model="field.phoneNumber">
                     </div>
                     <div class="btn-group">
-                      <button class="btn btn-info" type="button" name="addField" ng-click="ctrl.addField()">Добавить поле</button>
-                      <button class="btn btn-success" type="button" name="setNewContact" ng-click="ctrl.addNewContact()">Создать</button>
-                  </div>
+                        <button class="btn btn-info" type="button" name="addField" ng-click="ctrl.addField()">Добавить поле</button>
+                        <button class="btn btn-success" type="button" name="setNewContact" ng-click="ctrl.addNewContact()">Создать</button>
+                    </div>
                 </form>
             </div>
             <div ng-switch-when="2" class="row">
                 <div>
-                    <input type="text" class="form-control" ng-model="ctrl.search" placeholder="Поиск" />
-                    <ul class="list-group">
-                        <li class="list-group-item showListItem" ng-repeat="item in ctrl.showList | orderBy:'name' | filter:ctrl.search" >
-                          {{item.name}}
-                          <button type="button" class="close removeListItem" aria-hidden="true" ng-click="ctrl.removeListItem(item.id)">&times;</button>
-                        </li>
-                    </ul>
+                    <div ng-show="ctrl.showItem">
+                        <input type="text" class="form-control" ng-model="ctrl.userDetails.name" ng-disabled="ctrl.change!=true">
+                        <div class="from-group" ng-repeat="field in ctrl.userDetails.phones track by $index">
+                            <input type="text" class="form-control" placeholder="Введите название телефона" ng-model="field.phoneName" ng-disabled="ctrl.change!=true">
+                            <input type="tel" class="form-control" placeholder="Введите номер телефона" ng-model="field.phoneNumber" ng-disabled="ctrl.change!=true">
+                        </div>
+                        <button class="btn btn-success" type="button" ng-show="ctrl.change" ng-click="ctrl.changeUserInfo()">Сохранить</button>
+                        <div class="btn-group">
+                            <button class="btn btn btn-warning" type="button" ng-click="ctrl.change = true">Изменить</button>
+                            <button class="btn btn-danger" type="button" ng-click="ctrl.showItem = false">Скрыть</button>
+                        </div>
+                    </div>
+                    <div ng-hide="ctrl.showItem">
+                        <input type="text" class="form-control" ng-model="ctrl.search" placeholder="Поиск" />
+                        <ul class="list-group">
+                            <li class="list-group-item showListItem" ng-repeat="item in ctrl.showList | orderBy:'name' | filter:ctrl.search" ng-click="ctrl.showUserDetails(item.id);ctrl.showItem=true">
+                                {{item.name}}
+                                <button type="button" class="close removeListItem" aria-hidden="true" ng-click="ctrl.removeListItem(item.id);$event.stopPropagation()">&times;</button>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
