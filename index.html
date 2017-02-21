@@ -27,7 +27,7 @@
                 };
                 this.showList = [];
 
-                function addShowListItems() {
+                function refreshShowListItems() {
                     this.showList.length = 0;
                     for (var key in this.list) {
                         if (key == 'user') continue;
@@ -60,13 +60,13 @@
 
                 if (localList) {
                     this.list = localList;
-                    addShowListItems.call(this);
+                    refreshShowListItems.call(this);
                 }
 
                 this.addNewContact = function() {
                     this.list.user++;
                     createNewContact.call(this);
-                    addShowListItems.call(this);
+                    refreshShowListItems.call(this);
                     localStorage.setItem('templateCache', JSON.stringify(this.list));
                     clearNewListObject.call(this);
                 };
@@ -77,8 +77,22 @@
                         phoneNumber: ''
                     });
                 };
+
+                this.removeListItem = function(item) {
+                  delete this.list[item];
+                  localStorage.setItem('templateCache', JSON.stringify(this.list));
+                  refreshShowListItems.call(this);
+                }
             })
     </script>
+    <style>
+    .removeListItem {
+      display: none;
+    }
+    .showListItem:hover .removeListItem {
+      display: inline-block;
+    }
+    </style>
 </head>
 
 <body ng-controller="appCtrl as ctrl">
@@ -114,7 +128,9 @@
                 <div>
                     <input type="text" class="form-control" ng-model="ctrl.search" placeholder="Поиск" />
                     <ul class="list-group">
-                        <li class="list-group-item" ng-repeat="item in ctrl.showList | filter:ctrl.search" ng-bind="item.name">
+                        <li class="list-group-item showListItem" ng-repeat="item in ctrl.showList | orderBy:'name' | filter:ctrl.search" >
+                          {{item.name}}
+                          <button type="button" class="close removeListItem" aria-hidden="true" ng-click="ctrl.removeListItem(item.id)">&times;</button>
                         </li>
                     </ul>
                 </div>
