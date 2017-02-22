@@ -85,8 +85,8 @@
 
                 this.showUserDetails = function(id) {
                     this.userDetails.name = '';
-                    this.userDetails.id = '',
-                        this.userDetails.length = 0;
+                    this.userDetails.id = '';
+                    this.userDetails.phones.length = 0;
                     this.userDetails.id = id;
                     this.userDetails.name = this.list[id].name;
                     for (var i = 0; i < this.list[id].phones.length; i++) {
@@ -109,7 +109,18 @@
                     };
                     refreshShowListItems.call(this);
                     localStorage.setItem('templateCache', JSON.stringify(this.list));
-                }
+                };
+
+                this.removeUserField = function(index) {
+                    this.userDetails.phones.splice(index, 1);
+                };
+
+                this.addUserInfoField = function() {
+                    this.userDetails.phones.push({
+                        phoneName: '',
+                        phoneNumber: ''
+                    })
+                };
 
                 this.removeListItem = function(item) {
                     delete this.list[item];
@@ -136,8 +147,8 @@
         </div>
         <div class="row">
             <ul class="nav nav-pills">
-                <li class="btn btn-default" ng-click="ctrl.pageShowNum=1">Создать</li>
-                <li class="btn btn-default" ng-click="ctrl.pageShowNum=2;ctrl.showItem = false">Посмотреть</li>
+                <li class="btn btn-default" ng-class="{'btn-primary': ctrl.pageShowNum == 1 }" ng-click="ctrl.pageShowNum=1">Создать</li>
+                <li class="btn btn-default" ng-class="{'btn-primary': ctrl.pageShowNum == 2 }" ng-click="ctrl.pageShowNum=2;ctrl.showItem = false;ctrl.change = false">Посмотреть</li>
             </ul>
         </div>
     </header>
@@ -161,13 +172,21 @@
             <div ng-switch-when="2" class="row">
                 <div>
                     <div ng-show="ctrl.showItem">
-                        <input type="text" class="form-control" ng-model="ctrl.userDetails.name" ng-disabled="ctrl.change!=true">
-                        <div class="from-group" ng-repeat="field in ctrl.userDetails.phones track by $index">
+                        <div class="form-group">
+                            <input type="text" class="form-control" ng-model="ctrl.userDetails.name" ng-disabled="ctrl.change!=true">
+                        </div>
+                        <div class="form-group" ng-repeat="field in ctrl.userDetails.phones track by $index">
+                            <button type="button" class="close" aria-hidden="true" ng-show="ctrl.change" ng-click="ctrl.removeUserField($index)">&times;</button>
                             <input type="text" class="form-control" placeholder="Введите название телефона" ng-model="field.phoneName" ng-disabled="ctrl.change!=true">
                             <input type="tel" class="form-control" placeholder="Введите номер телефона" ng-model="field.phoneNumber" ng-disabled="ctrl.change!=true">
+
                         </div>
-                        <button class="btn btn-success" type="button" ng-show="ctrl.change" ng-click="ctrl.changeUserInfo()">Сохранить</button>
-                        <div class="btn-group">
+                        <div class="btn-group" ng-show="ctrl.change">
+                          <button class="btn btn-warning" type="button" ng-click="ctrl.addUserInfoField()">Добавить поле</button>
+                          <button class="btn btn-success" type="button" ng-click="ctrl.changeUserInfo()">Сохранить</button>
+                          <button class="btn btn-danger" type="button" ng-click="ctrl.showItem = false;ctrl.change = false">Отмена</button>
+                        </div>
+                        <div class="btn-group" ng-hide="ctrl.change">
                             <button class="btn btn btn-warning" type="button" ng-click="ctrl.change = true">Изменить</button>
                             <button class="btn btn-danger" type="button" ng-click="ctrl.showItem = false">Скрыть</button>
                         </div>
