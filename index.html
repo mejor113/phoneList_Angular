@@ -146,10 +146,40 @@
         .userDetails .ng-invalid.ng-dirty{
             border-color: #e82f23;
         }
+
+        .popup {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          z-index: 100;
+          background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .alertWindow {
+          display: block;
+          position: relative;
+          width: 300px;
+          border-radius: 5px;
+          padding: 20px 30px;
+          margin: 0 auto;
+          margin-top: 200px;
+          text-align: center;
+          font-size: 16px;
+          background-color: #fff;
+        }
     </style>
 </head>
 
 <body ng-controller="appCtrl as ctrl">
+
+      <div class="popup" ng-if="ctrl.deleteListItem">
+        <div class="alertWindow">
+          <p>Вы точно хотите удалить выбранный контакт ?</p>
+          <button type="button" class="btn btn-danger" ng-click="ctrl.removeListItem(ctrl.deleteListItem);ctrl.deleteListItem = false">Удалить</button>
+          <button type="button" class="btn btn-default" ng-click="ctrl.deleteListItem = false">Отмена</button>
+        </div>
+      </div>
+
     <header class="container">
         <div class="row bg-primary title-block">
             <h2 class="text-center">Список контактов</h2>
@@ -187,7 +217,7 @@
                                 <input type="text" class="form-control" ng-model="ctrl.userDetails.name" ng-disabled="ctrl.change!=true" required>
                             </div>
                             <div class="form-group" ng-repeat="field in ctrl.userDetails.phones track by $index">
-                                <button type="button" class="close" aria-hidden="true" ng-show="ctrl.change" ng-click="ctrl.removeUserField($index)">&times;</button>
+                                <button type="button" class="close" aria-hidden="true" ng-hide="$index == 0" ng-click="ctrl.removeUserField($index)">&times;</button>
                                 <input type="text" class="form-control" placeholder="Введите название телефона" ng-model="field.phoneName" ng-disabled="ctrl.change!=true" required>
                                 <input type="tel" class="form-control" placeholder="Введите номер телефона" ng-model="field.phoneNumber" ng-disabled="ctrl.change!=true" pattern="[0-9]{5,13}" required>
                             </div>
@@ -207,7 +237,7 @@
                         <ul class="list-group">
                             <li class="list-group-item showListItem" ng-repeat="item in ctrl.showList | orderBy:'name' | filter:ctrl.search" ng-click="ctrl.showUserDetails(item.id);ctrl.showItem=true">
                                 {{item.name}}
-                                <button type="button" class="close removeListItem" aria-hidden="true" ng-click="ctrl.removeListItem(item.id);$event.stopPropagation()">&times;</button>
+                                <button type="button" class="close removeListItem" aria-hidden="true" ng-click="ctrl.deleteListItem = item.id;$event.stopPropagation()">&times;</button>
                             </li>
                         </ul>
                     </div>
