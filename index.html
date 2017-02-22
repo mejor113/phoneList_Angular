@@ -83,6 +83,10 @@
                     });
                 };
 
+                this.removeField = function(index) {
+                    this.newCont.phones.splice(index, 1);
+                }
+
                 this.showUserDetails = function(id) {
                     this.userDetails.name = '';
                     this.userDetails.id = '';
@@ -137,6 +141,11 @@
         .showListItem:hover .removeListItem {
             display: inline-block;
         }
+
+        .addNewContactForm .ng-invalid.ng-dirty ,
+        .userDetails .ng-invalid.ng-dirty{
+            border-color: #e82f23;
+        }
     </style>
 </head>
 
@@ -147,7 +156,7 @@
         </div>
         <div class="row">
             <ul class="nav nav-pills">
-                <li class="btn btn-default" ng-class="{'btn-primary': ctrl.pageShowNum == 1 }" ng-click="ctrl.pageShowNum=1">Создать</li>
+                <li class="btn btn-default" ng-class="{'btn-primary': ctrl.pageShowNum == 1 }" ng-click="ctrl.pageShowNum=1">Новый</li>
                 <li class="btn btn-default" ng-class="{'btn-primary': ctrl.pageShowNum == 2 }" ng-click="ctrl.pageShowNum=2;ctrl.showItem = false;ctrl.change = false">Посмотреть</li>
             </ul>
         </div>
@@ -155,37 +164,39 @@
     <main>
         <div class="container" ng-switch on="ctrl.pageShowNum">
             <div ng-switch-when="1" class="row">
-                <form role="form">
+                <form name="addNewContact" novalidate ng-submit="ctrl.addNewContact()" class="addNewContactForm">
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Введите полное имя" ng-model="ctrl.newCont.name">
+                        <input type="text" class="form-control" placeholder="Введите полное имя" ng-model="ctrl.newCont.name" required>
                     </div>
                     <div class="from-group" ng-repeat="field in ctrl.newCont.phones track by $index">
-                        <input type="text" class="form-control" placeholder="Введите название телефона" ng-model="field.phoneName">
-                        <input type="tel" class="form-control" placeholder="Введите номер телефона" ng-model="field.phoneNumber">
+                        <button type="button" class="close" aria-hidden="true" ng-hide="$index == 0" ng-click="ctrl.removeField($index)">&times;</button>
+                        <input type="text" class="form-control" placeholder="Введите название телефона" ng-model="field.phoneName" required>
+                        <input type="tel" class="form-control" placeholder="Введите номер телефона" ng-model="field.phoneNumber" pattern="[0-9]{5,13}" required>
                     </div>
                     <div class="btn-group">
                         <button class="btn btn-info" type="button" name="addField" ng-click="ctrl.addField()">Добавить поле</button>
-                        <button class="btn btn-success" type="button" name="setNewContact" ng-click="ctrl.addNewContact()">Создать</button>
+                        <button class="btn btn-success" type="submit" name="setNewContact" ng-disabled="addNewContact.$invalid">Создать</button>
                     </div>
                 </form>
             </div>
             <div ng-switch-when="2" class="row">
                 <div>
                     <div ng-show="ctrl.showItem">
-                        <div class="form-group">
-                            <input type="text" class="form-control" ng-model="ctrl.userDetails.name" ng-disabled="ctrl.change!=true">
-                        </div>
-                        <div class="form-group" ng-repeat="field in ctrl.userDetails.phones track by $index">
-                            <button type="button" class="close" aria-hidden="true" ng-show="ctrl.change" ng-click="ctrl.removeUserField($index)">&times;</button>
-                            <input type="text" class="form-control" placeholder="Введите название телефона" ng-model="field.phoneName" ng-disabled="ctrl.change!=true">
-                            <input type="tel" class="form-control" placeholder="Введите номер телефона" ng-model="field.phoneNumber" ng-disabled="ctrl.change!=true">
-
-                        </div>
-                        <div class="btn-group" ng-show="ctrl.change">
-                          <button class="btn btn-warning" type="button" ng-click="ctrl.addUserInfoField()">Добавить поле</button>
-                          <button class="btn btn-success" type="button" ng-click="ctrl.changeUserInfo()">Сохранить</button>
-                          <button class="btn btn-danger" type="button" ng-click="ctrl.showItem = false;ctrl.change = false">Отмена</button>
-                        </div>
+                        <form name="userDetails" class="userDetails" novalidate ng-submit="ctrl.changeUserInfo();ctrl.showItem = false">
+                            <div class="form-group">
+                                <input type="text" class="form-control" ng-model="ctrl.userDetails.name" ng-disabled="ctrl.change!=true" required>
+                            </div>
+                            <div class="form-group" ng-repeat="field in ctrl.userDetails.phones track by $index">
+                                <button type="button" class="close" aria-hidden="true" ng-show="ctrl.change" ng-click="ctrl.removeUserField($index)">&times;</button>
+                                <input type="text" class="form-control" placeholder="Введите название телефона" ng-model="field.phoneName" ng-disabled="ctrl.change!=true" required>
+                                <input type="tel" class="form-control" placeholder="Введите номер телефона" ng-model="field.phoneNumber" ng-disabled="ctrl.change!=true" pattern="[0-9]{5,13}" required>
+                            </div>
+                            <button class="btn btn-success" type="submit" ng-show="userDetails.$dirty" ng-disabled="userDetails.$invalid">Сохранить</button>
+                            <div class="btn-group" ng-show="ctrl.change">
+                                <button class="btn btn-warning" type="button" ng-click="ctrl.addUserInfoField()">Добавить поле</button>
+                                <button class="btn btn-danger" type="button" ng-click="ctrl.showItem = false;ctrl.change = false">Отмена</button>
+                            </div>
+                        </form>
                         <div class="btn-group" ng-hide="ctrl.change">
                             <button class="btn btn btn-warning" type="button" ng-click="ctrl.change = true">Изменить</button>
                             <button class="btn btn-danger" type="button" ng-click="ctrl.showItem = false">Скрыть</button>
