@@ -119,3 +119,38 @@ angular.module('myApp', [])
             refreshShowListItems.call(this);
         }
     })
+    .directive('firstPage', function(){
+      return {
+        restrict: 'EA',
+        replace: true,
+        templateUrl: 'templates/firstPageTemplate.html'
+      };
+    })
+    .directive('secondPage',function(){
+      return {
+        restrict: 'EA',
+        replace: true,
+        templateUrl: 'templates/secondPageTemplate.html'
+      };
+    })
+    .directive('listTemplate',function(){
+      return {
+        restrict: 'EA',
+        replace: true,
+        templateUrl: 'templates/listTemplate.html'
+      };
+    })
+    .directive('changeTemplate',function(){
+      return {
+        restrict: 'EA',
+        replace: true,
+        templateUrl: 'templates/changeTemplate.html'
+      };
+    })
+    .directive('detailsTemplate',function(){
+      return {
+        restrict: 'EA',
+        replace: true,
+        templateUrl: 'templates/detailsTemplate.html'
+      };
+    })

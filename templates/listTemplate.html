@@ -1,0 +1,9 @@
+<div ng-show="ctrl.showItem == 'list'">
+    <input type="text" class="form-control search" ng-model="ctrl.search" placeholder="Поиск" />
+    <ul class="list-group">
+        <li class="list-group-item showListItem" ng-repeat="item in ctrl.showList | orderBy:'name' | filter:ctrl.search" ng-click="ctrl.showUserDetails(item.id);ctrl.showItem = 'details'">
+            {{item.name}}
+            <button type="button" class="close removeListItem" aria-hidden="true" ng-click="ctrl.deleteListItem = item.id;$event.stopPropagation()">&times;</button>
+        </li>
+    </ul>
+</div>

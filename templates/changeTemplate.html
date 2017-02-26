@@ -1,0 +1,17 @@
+<div ng-show="ctrl.showItem == 'change'">
+    <form name="userChange" class="userChange" novalidate ng-submit="ctrl.changeUserInfo();ctrl.showUserDetails(ctrl.userDetails.id);ctrl.showItem = 'details'">
+        <input type="text" class="form-control" ng-model="ctrl.userDetails.name" required>
+        <div ng-repeat="field in ctrl.userDetails.phones track by $index" class="userChange-item">
+            <input type="text" class="form-control userChange-field" placeholder="Введите название телефона" ng-model="field.phoneName" ng-class="{'userChange-first-child': $index == 0}" required>
+            <button type="button" class="btn userChange-removeFiled" aria-hidden="true" ng-hide="$index == 0" ng-click="ctrl.removeUserField($index)">
+              <span class="glyphicon glyphicon-remove"></span>
+            </button>
+            <input type="tel" class="form-control userChange-field" placeholder="Введите номер телефона" ng-model="field.phoneNumber" ng-class="{'userChange-first-child': $index == 0}" ng-pattern="{{$index == 0 ? '[\+]{0,1}[0-9]{2,14}' : ''}}" required>
+        </div>
+        <button class="btn btn-success userChange-btn-save" type="submit" ng-disabled="userChange.$invalid">Сохранить</button>
+        <div class="btn-group userChange-btn-group">
+            <button class="btn btn-warning userChange-btn-add" type="button" ng-click="ctrl.addUserInfoField()">Добавить поле</button>
+            <button class="btn btn-danger userChange-btn-cancel" type="button" ng-click="ctrl.showUserDetails(ctrl.userDetails.id);ctrl.showItem = 'details'">Отмена</button>
+        </div>
+    </form>
+</div>

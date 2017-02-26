@@ -41,66 +41,10 @@
     <main ng-cloak>
         <div class="container" ng-switch on="ctrl.pageShowNum">
             <div ng-switch-when="1" class="row">
-                <div class="col-xs-12 col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3">
-                    <form name="addNewContact" novalidate ng-submit="ctrl.addNewContact()" class="addNewContactForm">
-                        <input type="text" class="form-control" placeholder="Введите полное имя" ng-model="ctrl.newCont.name" required>
-                        <div class="form-group newCont-item" ng-repeat="field in ctrl.newCont.phones track by $index">
-                            <input type="text" class="form-control newCont-field" placeholder="Введите название телефона" ng-class="{'newCont-first-child': $index == 0}" ng-model="field.phoneName" required>
-                            <button type="button" class="btn newCont-removeField" aria-hidden="true" ng-hide="$index == 0" ng-click="ctrl.removeField($index)">
-                              <span class="glyphicon glyphicon-remove"></span>
-                            </button>
-                            <input type="tel" class="form-control newCont-field" placeholder="Введите номер телефона" ng-class="{'newCont-first-child': $index == 0}" ng-model="field.phoneNumber" ng-pattern="{{$index == 0 ? '[\+]{0,1}[0-9]{2,14}' : ''}}" required>
-                        </div>
-                        <div class="btn-group newCont-btn-group">
-                            <button class="btn btn-info newCont-btn" type="button" name="addField" ng-click="ctrl.addField()">Добавить поле</button>
-                            <button class="btn btn-success newCont-btn" type="submit" name="setNewContact" ng-disabled="addNewContact.$invalid">Создать</button>
-                        </div>
-                    </form>
-                </div>
+                <first-page></first-page>
             </div>
             <div ng-switch-when="2" class="row">
-                <div class="col-xs-12 col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3">
-                    <div ng-show="ctrl.showItem == 'list'">
-                        <input type="text" class="form-control search" ng-model="ctrl.search" placeholder="Поиск" />
-                        <ul class="list-group">
-                            <li class="list-group-item showListItem" ng-repeat="item in ctrl.showList | orderBy:'name' | filter:ctrl.search" ng-click="ctrl.showUserDetails(item.id);ctrl.showItem = 'details'">
-                                {{item.name}}
-                                <button type="button" class="close removeListItem" aria-hidden="true" ng-click="ctrl.deleteListItem = item.id;$event.stopPropagation()">&times;</button>
-                            </li>
-                        </ul>
-                    </div>
-                    <div ng-show="ctrl.showItem == 'details'">
-                        <div>
-                            <p class="text-center userDetails-name">{{ctrl.userDetails.name}}</p>
-                            <p ng-repeat="phones in ctrl.userDetails.phones" class="userDetails-item">
-                                <span class="userDetails-phone-name">{{phones.phoneName}} :</span>
-                                <span class="userDetails-phone-number">{{phones.phoneNumber}}</span>
-                            </p>
-                        </div>
-                        <div class="btn-group userDetails-btn-group">
-                            <button class="btn btn-success userDetails-btn" type="button" ng-click="ctrl.showItem = 'change'">Редактировать</button>
-                            <button class="btn btn-warning userDetails-btn" type="button" ng-click="ctrl.showItem = 'list'">Скрыть</button>
-                        </div>
-                        <button type="button" class="btn btn-danger userDetails-btn userDetails-btn-delete" ng-click="ctrl.deleteListItem = ctrl.userDetails.id">Удалить</button>
-                    </div>
-                    <div ng-show="ctrl.showItem == 'change'">
-                        <form name="userChange" class="userChange" novalidate ng-submit="ctrl.changeUserInfo();ctrl.showUserDetails(ctrl.userDetails.id);ctrl.showItem = 'details'">
-                            <input type="text" class="form-control" ng-model="ctrl.userDetails.name" required>
-                            <div ng-repeat="field in ctrl.userDetails.phones track by $index" class="userChange-item">
-                                <input type="text" class="form-control userChange-field" placeholder="Введите название телефона" ng-model="field.phoneName" ng-class="{'userChange-first-child': $index == 0}" required>
-                                <button type="button" class="btn userChange-removeFiled" aria-hidden="true" ng-hide="$index == 0" ng-click="ctrl.removeUserField($index)">
-                                  <span class="glyphicon glyphicon-remove"></span>
-                                </button>
-                                <input type="tel" class="form-control userChange-field" placeholder="Введите номер телефона" ng-model="field.phoneNumber" ng-class="{'userChange-first-child': $index == 0}" ng-pattern="{{$index == 0 ? '[\+]{0,1}[0-9]{2,14}' : ''}}" required>
-                            </div>
-                            <button class="btn btn-success userChange-btn-save" type="submit" ng-disabled="userChange.$invalid">Сохранить</button>
-                            <div class="btn-group userChange-btn-group">
-                                <button class="btn btn-warning userChange-btn-add" type="button" ng-click="ctrl.addUserInfoField()">Добавить поле</button>
-                                <button class="btn btn-danger userChange-btn-cancel" type="button" ng-click="ctrl.showUserDetails(ctrl.userDetails.id);ctrl.showItem = 'details'">Отмена</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                <second-page></second-page>
             </div>
         </div>
     </main>
