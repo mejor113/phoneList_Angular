@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="myApp">
+<html lang="ru" ng-app="myApp">
 
 <head>
     <meta charset="UTF-8">
@@ -11,128 +11,7 @@
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans&amp;subset=cyrillic" rel="stylesheet">
     <link rel="stylesheet" href="css/bundle.min.css">
-    <script>
-        angular.module('myApp', [])
-            .controller('appCtrl', function($scope) {
-                var localList = JSON.parse(localStorage.getItem('templateCache'));
-                this.pageShowNum = 1;
-                this.list = {
-                    user: 0
-                };
-                this.userDetails = {
-                    id: '',
-                    name: '',
-                    phones: []
-                };
-                this.newCont = {
-                    name: '',
-                    phones: [{
-                        phoneName: 'Мобильный',
-                        phoneNumber: ''
-                    }]
-                };
-                this.showList = [];
-
-                function refreshShowListItems() {
-                    this.showList.length = 0;
-                    for (var key in this.list) {
-                        if (key == 'user') continue;
-                        this.showList.push({
-                            name: this.list[key].name,
-                            id: key
-                        })
-                    }
-                };
-
-                function createNewContact() {
-                    var id = 'id' + this.list.user;
-                    this.list[id] = {};
-                    this.list[id].name = this.newCont.name;
-                    this.list[id].phones = [];
-                    for (var i = 0; i < this.newCont.phones.length; i++) {
-                        this.list[id].phones.push({
-                            phoneName: this.newCont.phones[i].phoneName,
-                            phoneNumber: this.newCont.phones[i].phoneNumber
-                        });
-                    };
-                };
-
-                function clearNewListObject() {
-                    this.newCont.name = '';
-                    this.newCont.phones.length = 1;
-                    this.newCont.phones[0].phoneName = 'Мобильный';
-                    this.newCont.phones[0].phoneNumber = '';
-                };
-
-                if (localList) {
-                    this.list = localList;
-                    refreshShowListItems.call(this);
-                }
-
-                this.addNewContact = function() {
-                    this.list.user++;
-                    createNewContact.call(this);
-                    refreshShowListItems.call(this);
-                    localStorage.setItem('templateCache', JSON.stringify(this.list));
-                    clearNewListObject.call(this);
-                };
-
-                this.addField = function() {
-                    this.newCont.phones.push({
-                        phoneName: '',
-                        phoneNumber: ''
-                    });
-                };
-
-                this.removeField = function(index) {
-                    this.newCont.phones.splice(index, 1);
-                }
-
-                this.showUserDetails = function(id) {
-                    this.userDetails.name = '';
-                    this.userDetails.id = '';
-                    this.userDetails.phones.length = 0;
-                    this.userDetails.id = id;
-                    this.userDetails.name = this.list[id].name;
-                    for (var i = 0; i < this.list[id].phones.length; i++) {
-                        this.userDetails.phones.push({
-                            phoneName: this.list[id].phones[i].phoneName,
-                            phoneNumber: this.list[id].phones[i].phoneNumber
-                        });
-                    };
-                };
-
-                this.changeUserInfo = function() {
-                    var id = this.userDetails.id;
-                    this.list[id].name = this.userDetails.name;
-                    this.list[id].phones.length = 0;
-                    for (var i = 0; i < this.userDetails.phones.length; i++) {
-                        this.list[id].phones.push({
-                            phoneName: this.userDetails.phones[i].phoneName,
-                            phoneNumber: this.userDetails.phones[i].phoneNumber
-                        });
-                    };
-                    refreshShowListItems.call(this);
-                    localStorage.setItem('templateCache', JSON.stringify(this.list));
-                };
-
-                this.removeUserField = function(index) {
-                    this.userDetails.phones.splice(index, 1);
-                };
-
-                this.addUserInfoField = function() {
-                    this.userDetails.phones.push({
-                        phoneName: '',
-                        phoneNumber: ''
-                    })
-                };
-
-                this.removeListItem = function(item) {
-                    delete this.list[item];
-                    localStorage.setItem('templateCache', JSON.stringify(this.list));
-                    refreshShowListItems.call(this);
-                }
-            })
+    <script type="text/javascript" src="scripts/app.js">
     </script>
 </head>
 
@@ -170,7 +49,7 @@
                             <button type="button" class="btn newCont-removeField" aria-hidden="true" ng-hide="$index == 0" ng-click="ctrl.removeField($index)">
                               <span class="glyphicon glyphicon-remove"></span>
                             </button>
-                            <input type="tel" class="form-control newCont-field" placeholder="Введите номер телефона" ng-class="{'newCont-first-child': $index == 0}" ng-model="field.phoneNumber" pattern="[0-9]{5,13}" required>
+                            <input type="tel" class="form-control newCont-field" placeholder="Введите номер телефона" ng-class="{'newCont-first-child': $index == 0}" ng-model="field.phoneNumber" ng-pattern="{{$index == 0 ? '[\+]{0,1}[0-9]{2,14}' : ''}}" required>
                         </div>
                         <div class="btn-group newCont-btn-group">
                             <button class="btn btn-info newCont-btn" type="button" name="addField" ng-click="ctrl.addField()">Добавить поле</button>
@@ -181,40 +60,40 @@
             </div>
             <div ng-switch-when="2" class="row">
                 <div class="col-xs-12 col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3">
-                  <div ng-show="ctrl.showItem == 'list'">
-                      <input type="text" class="form-control search" ng-model="ctrl.search" placeholder="Поиск" />
-                      <ul class="list-group">
-                          <li class="list-group-item showListItem" ng-repeat="item in ctrl.showList | orderBy:'name' | filter:ctrl.search" ng-click="ctrl.showUserDetails(item.id);ctrl.showItem = 'details'">
-                              {{item.name}}
-                              <button type="button" class="close removeListItem" aria-hidden="true" ng-click="ctrl.deleteListItem = item.id;$event.stopPropagation()">&times;</button>
-                          </li>
-                      </ul>
-                  </div>
-                  <div ng-show="ctrl.showItem == 'details'">
-                      <div>
-                        <p class="text-center userDetails-name">{{ctrl.userDetails.name}}</p>
-                        <p ng-repeat="phones in ctrl.userDetails.phones" class="userDetails-item">
-                          <span class="userDetails-phone-name">{{phones.phoneName}} :</span>
-                          <span class="userDetails-phone-number">{{phones.phoneNumber}}</span>
-                        </p>
-                      </div>
-                      <div class="btn-group userDetails-btn-group">
-                        <button class="btn btn-success userDetails-btn" type="button" ng-click="ctrl.showItem = 'change'">Редактировать</button>
-                        <button class="btn btn-warning userDetails-btn" type="button" ng-click="ctrl.showItem = 'list'">Скрыть</button>
-                      </div>
-                      <button type="button" class="btn btn-danger userDetails-btn userDetails-btn-delete" ng-click="ctrl.deleteListItem = ctrl.userDetails.id">Удалить</button>
+                    <div ng-show="ctrl.showItem == 'list'">
+                        <input type="text" class="form-control search" ng-model="ctrl.search" placeholder="Поиск" />
+                        <ul class="list-group">
+                            <li class="list-group-item showListItem" ng-repeat="item in ctrl.showList | orderBy:'name' | filter:ctrl.search" ng-click="ctrl.showUserDetails(item.id);ctrl.showItem = 'details'">
+                                {{item.name}}
+                                <button type="button" class="close removeListItem" aria-hidden="true" ng-click="ctrl.deleteListItem = item.id;$event.stopPropagation()">&times;</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div ng-show="ctrl.showItem == 'details'">
+                        <div>
+                            <p class="text-center userDetails-name">{{ctrl.userDetails.name}}</p>
+                            <p ng-repeat="phones in ctrl.userDetails.phones" class="userDetails-item">
+                                <span class="userDetails-phone-name">{{phones.phoneName}} :</span>
+                                <span class="userDetails-phone-number">{{phones.phoneNumber}}</span>
+                            </p>
+                        </div>
+                        <div class="btn-group userDetails-btn-group">
+                            <button class="btn btn-success userDetails-btn" type="button" ng-click="ctrl.showItem = 'change'">Редактировать</button>
+                            <button class="btn btn-warning userDetails-btn" type="button" ng-click="ctrl.showItem = 'list'">Скрыть</button>
+                        </div>
+                        <button type="button" class="btn btn-danger userDetails-btn userDetails-btn-delete" ng-click="ctrl.deleteListItem = ctrl.userDetails.id">Удалить</button>
                     </div>
                     <div ng-show="ctrl.showItem == 'change'">
-                        <form name="userChange" class="userChange" novalidate ng-submit="ctrl.changeUserInfo();ctrl.showUserDetails(ctrl.userDetails.id);ctrl.showItem = 'details';">
+                        <form name="userChange" class="userChange" novalidate ng-submit="ctrl.changeUserInfo();ctrl.showUserDetails(ctrl.userDetails.id);ctrl.showItem = 'details'">
                             <input type="text" class="form-control" ng-model="ctrl.userDetails.name" required>
                             <div ng-repeat="field in ctrl.userDetails.phones track by $index" class="userChange-item">
                                 <input type="text" class="form-control userChange-field" placeholder="Введите название телефона" ng-model="field.phoneName" ng-class="{'userChange-first-child': $index == 0}" required>
                                 <button type="button" class="btn userChange-removeFiled" aria-hidden="true" ng-hide="$index == 0" ng-click="ctrl.removeUserField($index)">
                                   <span class="glyphicon glyphicon-remove"></span>
                                 </button>
-                                <input type="tel" class="form-control userChange-field" placeholder="Введите номер телефона" ng-model="field.phoneNumber" ng-class="{'userChange-first-child': $index == 0}" pattern="[0-9]{5,13}" required>
+                                <input type="tel" class="form-control userChange-field" placeholder="Введите номер телефона" ng-model="field.phoneNumber" ng-class="{'userChange-first-child': $index == 0}" ng-pattern="{{$index == 0 ? '[\+]{0,1}[0-9]{2,14}' : ''}}" required>
                             </div>
-                            <button class="btn btn-success userChange-btn-save" type="submit" ng-show="userChange.$dirty" ng-disabled="userChange.$invalid">Сохранить</button>
+                            <button class="btn btn-success userChange-btn-save" type="submit" ng-disabled="userChange.$invalid">Сохранить</button>
                             <div class="btn-group userChange-btn-group">
                                 <button class="btn btn-warning userChange-btn-add" type="button" ng-click="ctrl.addUserInfoField()">Добавить поле</button>
                                 <button class="btn btn-danger userChange-btn-cancel" type="button" ng-click="ctrl.showUserDetails(ctrl.userDetails.id);ctrl.showItem = 'details'">Отмена</button>
