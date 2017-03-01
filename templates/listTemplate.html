@@ -1,9 +1,9 @@
-<div ng-show="ctrl.showItem == 'list'">
-    <input type="text" class="form-control search" ng-model="ctrl.search" placeholder="Поиск" />
+<div ng-show="showItem == 'list'">
+    <input type="text" class="form-control search" ng-model="search" placeholder="Поиск" />
     <ul class="list-group">
-        <li class="list-group-item showListItem" ng-repeat="item in ctrl.showList | orderBy:'name' | filter:ctrl.search" ng-click="ctrl.showUserDetails(item.id);ctrl.showItem = 'details'">
+        <li class="list-group-item showListItem" ng-repeat="item in showList | orderBy:'name' | filter:search " ng-click="detailsFunc(item.id)">
             {{item.name}}
-            <button type="button" class="close removeListItem" aria-hidden="true" ng-click="ctrl.deleteListItem = item.id;$event.stopPropagation()">&times;</button>
+            <button type="button" class="close removeListItem" aria-hidden="true" ng-click="deleteFunc(item.id);$event.stopPropagation()">&times;</button>
         </li>
     </ul>
 </div>

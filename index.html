@@ -16,7 +16,7 @@
 </head>
 
 <body ng-controller="appCtrl as ctrl">
-    <div class="popup" ng-if="ctrl.deleteListItem" ng-cloak>
+    <div class="popup" ng-show="ctrl.deleteListItem" ng-cloak>
         <div class="alertWindow">
             <p>Вы точно хотите удалить выбранный контакт ?</p>
             <button type="button" class="btn btn-danger" ng-click="ctrl.removeListItem(ctrl.deleteListItem);ctrl.deleteListItem = false;ctrl.showItem = 'list'">Удалить</button>
@@ -32,7 +32,7 @@
                 <div class="col-xs-12 col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3">
                     <div class="btn-group btn-page-group">
                         <button class="btn btn-default btn-block-page" ng-class="{'btn-primary': ctrl.pageShowNum == 1 }" ng-click="ctrl.pageShowNum=1">Новый контакт</button>
-                        <button class="btn btn-default btn-block-page" ng-class="{'btn-primary': ctrl.pageShowNum == 2 }" ng-click="ctrl.pageShowNum=2;ctrl.showItem = 'list'">Весь список</button>
+                        <button class="btn btn-default btn-block-page" ng-class="{'btn-primary': ctrl.pageShowNum == 2 }" ng-click="ctrl.pageShowNum=2;ctrl.refreshShowListItems();ctrl.showItem = 'list'">Весь список</button>
                     </div>
                 </div>
             </div>
@@ -41,7 +41,7 @@
     <main ng-cloak>
         <div class="container" ng-switch on="ctrl.pageShowNum">
             <div ng-switch-when="1" class="row">
-                <first-page></first-page>
+                <first-page list-atr="ctrl.list" refresh-atr="ctrl.refreshShowListItems"></first-page>
             </div>
             <div ng-switch-when="2" class="row">
                 <second-page></second-page>

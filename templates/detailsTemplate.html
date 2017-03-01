@@ -1,14 +1,14 @@
-<div ng-show="ctrl.showItem == 'details'">
+<div ng-show="showItem == 'details'">
     <div>
-        <p class="text-center userDetails-name">{{ctrl.userDetails.name}}</p>
-        <p ng-repeat="phones in ctrl.userDetails.phones" class="userDetails-item">
+        <p class="text-center userDetails-name">{{list[detailsId].name}}</p>
+        <p ng-repeat="phones in list[detailsId].phones" class="userDetails-item">
             <span class="userDetails-phone-name">{{phones.phoneName}} :</span>
             <span class="userDetails-phone-number">{{phones.phoneNumber}}</span>
         </p>
     </div>
     <div class="btn-group userDetails-btn-group">
-        <button class="btn btn-success userDetails-btn" type="button" ng-click="ctrl.showItem = 'change'">Редактировать</button>
-        <button class="btn btn-warning userDetails-btn" type="button" ng-click="ctrl.showItem = 'list'">Скрыть</button>
+        <button class="btn btn-success userDetails-btn" type="button" ng-click="showItem = 'change'">Редактировать</button>
+        <button class="btn btn-warning userDetails-btn" type="button" ng-click="showItem = 'list'">Скрыть</button>
     </div>
-    <button type="button" class="btn btn-danger userDetails-btn userDetails-btn-delete" ng-click="ctrl.deleteListItem = ctrl.userDetails.id">Удалить</button>
+    <button type="button" class="btn btn-danger userDetails-btn userDetails-btn-delete" ng-click="delete = detailsId">Удалить</button>
 </div>
